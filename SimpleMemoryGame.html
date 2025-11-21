@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Memory Game</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to bottom right, #325DFF, #001A99);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: #ffffff;
+        padding: 8px 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transition: 0.2s ease;
+    }
+
+    .back-btn:hover {
+        background: #eeeeee;
+        transform: scale(1.05);
+    }
+
+    .game-container {
+        background: white;
+        padding: 25px 35px;
+        border-radius: 14px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        text-align: center;
+    }
+
+    h1 {
+        margin-bottom: 5px;
+        color: #222;
+    }
+
+    p {
+        margin: 4px 0 10px;
+        color: #444;
+    }
+
+    .game-board {
+        width: 280px;
+        margin: auto;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+    .card {
+        width: 60px;
+        height: 60px;
+        background-color: #ffb300;
+        color: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 22px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        user-select: none;
+        transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+        transform: scale(1.08);
+    }
+
+    .flipped {
+        background-color: #ff8c00;
+        color: white;
+    }
+
+    button {
+        margin-top: 18px;
+        padding: 10px 25px;
+        border: none;
+        background: #e74c3c;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    button:hover {
+        background-color: #c0392b;
+    }
+</style>
+</head>
+
+<body>
+
+<!-- Back to Menu Button -->
+<a href="main.html" class="back-btn">← Back to Menu</a>
+
+<div class="game-container">
+    <h1>Simple Memory Game</h1>
+    <p>Match all the pairs!</p>
+    <p>Abanilla, Mendoza, Vargas</p>
+
+    <div class="game-board" id="gameBoard"></div>
+
+    <button id="restartBtn">Restart Game</button>
+</div>
+
+<script>
+    const board = document.getElementById("gameBoard");
+    const restartBtn = document.getElementById("restartBtn");
+
+    let cards = ["A","A","B","B","C","C","D","D"];
+
+    function startGame() {
+        board.innerHTML = ""; 
+        let firstCard = null;
+        let secondCard = null;
+        let lockBoard = false;
+
+        let shuffled = [...cards].sort(() => Math.random() - 0.5);
+
+        shuffled.forEach(letter => {
+            const card = document.createElement("div");
+            card.classList.add("card");
+            card.textContent = "?";
+            card.dataset.letter = letter;
+
+            card.addEventListener("click", () => flipCard(card));
+
+            board.appendChild(card);
+        });
+
+        function flipCard(card) {
+            if (lockBoard || card === firstCard) return;
+
+            card.textContent = card.dataset.letter;
+            card.classList.add("flipped");
+
+            if (!firstCard) {
+                firstCard = card;
+                return;
+            }
+
+            secondCard = card;
+            lockBoard = true;
+
+            checkMatch();
+        }
+
+        function checkMatch() {
+            if (firstCard.dataset.letter === secondCard.dataset.letter) {
+                resetTurn();
+            } else {
+                setTimeout(() => {
+                    firstCard.textContent = "?";
+                    secondCard.textContent = "?";
+                    firstCard.classList.remove("flipped");
+                    secondCard.classList.remove("flipped");
+                    resetTurn();
+                }, 700);
+            }
+        }
+
+        function resetTurn() {
+            firstCard = null;
+            secondCard = null;
+            lockBoard = false;
+        }
+    }
+
+    restartBtn.addEventListener("click", startGame);
+
+    startGame();
+</script>
+
+</body>
+</html>
